@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://drsq11ricafpa"]
+
+[ext_resource type="Script" uid="uid://c2kbve0xge4ns" path="res://core_game/levels/main_level.gd" id="1_dseof"]
+[ext_resource type="PackedScene" uid="uid://porfd0422635" path="res://core_game/gui/gui_main_screen.tscn" id="2_hqj23"]
+
+[node name="main_level" type="Node2D"]
+scale = Vector2(100, 100)
+script = ExtResource("1_dseof")
+
+[node name="GUI_CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="gui_main_screen" parent="GUI_CanvasLayer" instance=ExtResource("2_hqj23")]

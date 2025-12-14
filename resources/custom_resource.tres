@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="custom_resource" load_steps=2 format=3 uid="uid://difd37i8nr7wb"]
+
+[ext_resource type="Script" uid="uid://b2xwptx6l6lfu" path="res://core_game/custom_resource.gd" id="1_7rso8"]
+
+[resource]
+script = ExtResource("1_7rso8")
+time_to_generate_icon = 20
+metadata/_custom_type_script = "uid://b2xwptx6l6lfu"
