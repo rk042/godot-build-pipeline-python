@@ -1,40 +1,24 @@
-import os
+import pathlib
 
-data ={}
+try:
+    godot_editor_path = r"E:\Godot_v4.5.1-stable_win64\Godot_v4.5.1-stable_win64_console.exe"
+    your_project_path = r"D:\Projects\Godot\godot-build-pipeline-python"
+    build_output_path = r""
 
-def main():
-    export_presets_cfg_path = get_export_preset_cfg_path()
-    with open(export_presets_cfg_path, "r", encoding="utf-8") as file:
-        for line in file:
-            line = line.strip()
-            if line and not line.startswith("#") and not line.startswith("["):
-                if "=" in line:
-                    key, value = line.split("=", 1)
-                    data[key.strip()] = value.strip()
-    
-        file.close()
+    if godot_editor_path is None or godot_editor_path == "":
+        raise ValueError("Godot editor path is not set.")
+    else:
+        print(f"Godot editor path is set to: {godot_editor_path}")
 
-def get_export_preset_cfg_path():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
-    return os.path.join(project_dir, "export_presets.cfg")
+    if your_project_path is None or your_project_path == "":
+        raise ValueError("Project path is not set.")
+    else:
+        print(f"Project path is set to: {your_project_path}")    
 
-def get_current_version_code():
-    return float(data.get("version/code", "0"))
+    if build_output_path is None or build_output_path == "":
+        pathlib.Path.mkdir(pathlib.Path(your_project_path) / "builds/test", exist_ok=True)
+        build_output_path = str(pathlib.Path(your_project_path) / "builds/test")
+        print(f"Build output path is not set. Using default: {build_output_path}")
 
-def get_project_platform_name():
-    return data.get("platform", "unknown")
-
-def get_export_path():
-    return data.get("export_path", "")
-
-def update_version_code(new_version_code):
-    data["version/code"] = str(new_version_code)
-    update_presets_cfg_file()
-
-def update_presets_cfg_file():
-    export_presets_cfg_path = get_export_preset_cfg_path()
-    #TODO: Implement writing back to the file
-
-main()
-update_version_code(get_current_version_code() + 0.1)
+except Exception as e:
+    print(f"Error: {e}")

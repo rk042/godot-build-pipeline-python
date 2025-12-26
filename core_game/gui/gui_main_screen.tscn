@@ -15,15 +15,11 @@ godot_icon = ExtResource("3_ul7mf")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
 offset_left = -262.0
-offset_top = -130.0
 offset_right = 262.0
-offset_bottom = 130.0
+offset_bottom = 260.0
 grow_horizontal = 2
-grow_vertical = 2
 columns = 4
