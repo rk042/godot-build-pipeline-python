@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c2kbve0xge4ns" path="res://core_game/levels/main_level.gd" id="1_dseof"]
 [ext_resource type="PackedScene" uid="uid://porfd0422635" path="res://core_game/gui/gui_main_screen.tscn" id="2_hqj23"]
-[ext_resource type="Resource" uid="uid://b68pkk2t0r8vn" path="res://resources/custom_version_resource.tres" id="2_k84ak"]
+[ext_resource type="Resource" path="res://resources/custom_version_resource.tres" id="2_k84ak"]
 [ext_resource type="PackedScene" uid="uid://bw74g6waa8m24" path="res://core_game/gui/version_label.tscn" id="4_k35uu"]
 
 [node name="main_level" type="Node2D"]

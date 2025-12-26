@@ -3,14 +3,14 @@ extends Resource
 class_name custom_version_resource
 
 @export var version:String 
-@export var is_manual_added:bool
 
-func _init() -> void:
+func init(is_manual_added:bool = false,manual_version:String = "") -> void:
 	
 	if not is_manual_added :
 		version = ProjectSettings.get_setting("application/config/version")
 		print("you do not provided manual version therefore using current project config version")
-		increase_version()
+	else:
+		version = manual_version
 		
 	print("custom version resource init ",version)
 
