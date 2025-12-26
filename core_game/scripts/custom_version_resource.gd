@@ -7,7 +7,6 @@ class_name custom_version_resource
 func init(is_manual_added:bool = false,manual_version:String = "") -> void:
 	
 	if not is_manual_added :
-		version = ProjectSettings.get_setting("application/config/version")
 		print("you do not provided manual version therefore using current project config version")
 	else:
 		version = manual_version
