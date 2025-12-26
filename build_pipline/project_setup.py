@@ -1,11 +1,23 @@
 import pathlib
+import argparse
+
+parser = argparse.ArgumentParser(description="Godot build pipeline")
+
+parser.add_argument("--exported-project-name", required=True)
+parser.add_argument("--exported-platform", choices=["windows", "android"], required=True)
+
+args = parser.parse_args()
+
+exported_project_name = args.exported_project_name
+export_platform = args.exported_platform
+
+print(f"Exported Project Name: {exported_project_name}")
+print(f"Export Platform: {export_platform}")
 
 try:
     godot_editor_path = r"E:\Godot_v4.5.1-stable_win64\Godot_v4.5.1-stable_win64_console.exe"
     your_project_path = r"D:\Projects\Godot\godot-build-pipeline-python"
     build_output_path = r""
-    exported_project_name = "build_pipline_test1"
-    export_platform = "android" # available options: "windows", "android"
     script_path = "res://core_game/scripts/build_pipline_bridge.gd" # bridge script path in your project
     
     if godot_editor_path is None or godot_editor_path == "":
@@ -51,3 +63,4 @@ try:
 except Exception as e:
     print(f"Error: {e}")
     exit(1)
+
