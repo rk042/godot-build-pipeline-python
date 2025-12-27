@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="custom_version_resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core_game/scripts/custom_version_resource.gd" id="1_o4tbo"]
+
+[resource]
+script = ExtResource("1_o4tbo")
+version = "0.0.6"
+metadata/_custom_type_script = "uid://dahwac6sgyatm"

@@ -1,12 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://drsq11ricafpa"]
+[gd_scene load_steps=5 format=3 uid="uid://drsq11ricafpa"]
 
 [ext_resource type="Script" uid="uid://c2kbve0xge4ns" path="res://core_game/levels/main_level.gd" id="1_dseof"]
 [ext_resource type="PackedScene" uid="uid://porfd0422635" path="res://core_game/gui/gui_main_screen.tscn" id="2_hqj23"]
+[ext_resource type="Resource" path="res://resources/custom_version_resource.tres" id="2_k84ak"]
+[ext_resource type="PackedScene" uid="uid://bw74g6waa8m24" path="res://core_game/gui/version_label.tscn" id="4_k35uu"]
 
 [node name="main_level" type="Node2D"]
 scale = Vector2(100, 100)
 script = ExtResource("1_dseof")
+version_resource = ExtResource("2_k84ak")
 
 [node name="GUI_CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="gui_main_screen" parent="GUI_CanvasLayer" instance=ExtResource("2_hqj23")]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.0
+grow_vertical = 1
+
+[node name="version_label" parent="GUI_CanvasLayer" instance=ExtResource("4_k35uu")]
+anchors_preset = 12
+anchor_top = 1.0
+offset_top = -34.0
+grow_vertical = 0
+
+[node name="btn_increase_version" type="Button" parent="GUI_CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -136.0
+offset_top = -126.0
+offset_right = 136.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Increase Version"
+
+[connection signal="pressed" from="GUI_CanvasLayer/btn_increase_version" to="." method="_on_btn_increase_version_pressed"]
