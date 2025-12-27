@@ -1,0 +1,79 @@
+name: Bug report
+description: Something is broken or not working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the details below so we can reproduce it.
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "Windows 11 / Ubuntu 22.04 / macOS ..."
+    validations:
+      required: true
+
+  - type: input
+    id: godot
+    attributes:
+      label: Godot Version
+      placeholder: "4.5.1 stable (console build)"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python Version
+      placeholder: "3.11.x"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Export Platform
+      options:
+        - windows
+        - android
+        - other
+    validations:
+      required: true
+
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      placeholder: 'python build_pipeline.py --exported-project-name "test" --exported-platform "windows"'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      placeholder: "What did you expect to happen?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result / error output
+      placeholder: "Paste logs here"
+      render: shell
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-checks
+      options:
+        - label: I have export templates installed in Godot
+          required: false
+        - label: I confirmed the export preset exists in Godot (same name as used in CLI)
+          required: false
