@@ -88,12 +88,8 @@ Version data is managed by `core_game/scripts/custom_version_resource.gd`:
 
 ## Roadmap & suggestions 
 
-Planned / suggested improvements:
-- Add CI (GitHub Actions, GitLab CI) to run builds automatically on push/tags.
-- Support release & stripped builds as well as debug builds.
-- Add a configuration file or environment variables to avoid editing `project_setup.py` directly.
-- Accept payload content as CLI arguments rather than hard-coding the payload in the Python file.
-- Store build artefacts in a dedicated location or upload to an artefact repository.
+See milestones for the long-term roadmap:
+[Milestones](https://github.com/rk042/godot-build-pipeline-python/milestones)
 
 ---
 
