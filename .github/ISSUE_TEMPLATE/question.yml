@@ -1,0 +1,41 @@
+name: Question
+description: Ask a question about setup or usage
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask anything about using the pipeline. Please include your setup so we can help quickly.
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "Windows / Linux / macOS"
+    validations:
+      required: true
+
+  - type: input
+    id: godot
+    attributes:
+      label: Godot Version
+      placeholder: "4.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      placeholder: "What are you stuck on?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / output (optional)
+      render: shell
+    validations:
+      required: false
