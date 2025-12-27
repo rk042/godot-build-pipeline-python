@@ -2,6 +2,9 @@
 
 A small, opinionated build automation helper for the Godot Engine written in Python.
 
+<img width="1151" height="676" alt="image" src="https://github.com/user-attachments/assets/eff5c9b4-aa56-45ff-a21d-355e0eb82154" />
+
+
 ## Overview 
 
 This project provides a lightweight pipeline for creating **debug** builds for Godot projects on **Windows** and **Android**. It demonstrates how to drive the Godot editor from Python, pass a JSON payload into a Godot script, and update project resources (for example, versioning and simple configuration values) programmatically.
