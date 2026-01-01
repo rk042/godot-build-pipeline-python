@@ -2,6 +2,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 from sys import platform
 from os import environ
+from validate_export_templates import available_platforms
 
 parser = ArgumentParser(description="Godot build pipeline")
 
@@ -85,6 +86,15 @@ try:
         print(f"Script path is set to: {script_path}")
 
     print("Project setup completed successfully.")
+
+    print("Checking available export platforms from export_presets.cfg...")
+
+    if exported_platform.lower() not in available_platforms:
+        raise ValueError(f"Export platform '{exported_platform.lower()}' is not available in export_presets.cfg. Available platforms: {available_platforms}\nFor more info visit : https://docs.godotengine.org/en/stable/tutorials/export/")
+    else:
+        print(f"Export platform '{exported_platform}' is available in export_presets.cfg.")
+
+    print("Validation of export templates completed successfully.")
 
 except Exception as e:
     print(f"Error: {e}")
