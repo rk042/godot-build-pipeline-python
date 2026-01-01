@@ -14,7 +14,7 @@ command = [
     "--headless",
     "--path", project_setup.your_project_path,
     "-s", project_setup.script_path,
-    "--export-debug", project_setup.export_platform,
+    "--export-debug", project_setup.exported_platform,
     rf"{project_setup.build_output_path}\{project_setup.exported_project_name}",
     "--",payload
 ]
