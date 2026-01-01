@@ -1,9 +1,9 @@
-import pathlib
-import argparse
+from pathlib import Path
+from argparse import ArgumentParser
+from sys import platform
 from os import environ
-from os import path
 
-parser = argparse.ArgumentParser(description="Godot build pipeline")
+parser = ArgumentParser(description="Godot build pipeline")
 
 parser.add_argument("--exported-project-name", required=True)
 parser.add_argument("--exported-project-path", required=False)
@@ -20,13 +20,28 @@ print(f"Export Platform: {exported_platform}")
 
 try:
     godot_editor_path = environ.get("GODOT_EDITOR_PATH", r"E:\Godot_v4.5.1-stable_win64\Godot_v4.5.1-stable_win64.exe") # if pipeline would be able to find godot editor path from env variable, otherwise set it manually here
-    your_project_path = path.dirname(path.dirname(path.abspath(__file__)))# r"D:\Projects\Godot\godot-build-pipeline-python"
+    your_project_path = Path(__file__).resolve().parents[1] # r"D:\Projects\Godot\godot-build-pipeline-python"
     build_output_path = exported_project_path  # if you want to set custom build output path, otherwise leave it as None
     script_path = "res://core_game/scripts/build_pipline_bridge.gd" # bridge script path in your project
     
     if godot_editor_path is None or godot_editor_path == "":
         raise ValueError("Godot editor path is not set.")
     else:
+        godot_path = Path(godot_editor_path)
+        host_plat = platform
+
+        if host_plat.startswith("win"):
+            if not godot_path.exists():
+                raise ValueError(f"Godot editor path does not exist: {godot_path}")
+
+            if not godot_path.is_file():
+                raise ValueError("Godot editor path must point to a file.")
+
+            if godot_path.suffix.lower() != ".exe":
+                raise ValueError("Godot editor path must point to a .exe file on Windows.")
+            
+        #will add more support when I get my linux machine back
+
         print(f"Godot editor path is set to: {godot_editor_path}")
 
     if your_project_path is None or your_project_path == "":
@@ -35,11 +50,11 @@ try:
         print(f"Project path is set to: {your_project_path}")    
 
     if build_output_path is None or build_output_path == "":
-        (pathlib.Path(your_project_path) / "builds/test").mkdir(parents=True, exist_ok=True)
-        build_output_path = str(pathlib.Path(your_project_path) / "builds/test")
+        (Path(your_project_path) / "builds/test").mkdir(parents=True, exist_ok=True)
+        build_output_path = str(Path(your_project_path) / "builds/test")
         print(f"Build output path is not set. Using default: {build_output_path}")
-    elif not pathlib.Path(build_output_path).exists():
-        pathlib.Path(build_output_path).mkdir(parents=True, exist_ok=True)
+    elif not Path(build_output_path).exists():
+        Path(build_output_path).mkdir(parents=True, exist_ok=True)
         print(f"Build output path did not exist. Created directory at: {build_output_path}")
     else:
         print(f"Build output path is set to: {build_output_path}")
