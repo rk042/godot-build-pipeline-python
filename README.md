@@ -27,12 +27,10 @@ The base goal is to create a robust build automation system for Godot using Pyth
 From the repository root you can run the pipeline script to generate a debug build:
 
 ```powershell
-python .\build_pipline\build_pipeline.py --exported-project-name "test pipeline 1" --exported-platform "windows"
+python .\build_pipeline\build_pipeline.py --exported-project-name "test pipeline 1" --exported-platform "windows"
 ```
 
 This will run Godot in headless mode, execute the bridge script inside your project, and export a **debug** build with the name provided (e.g. `test pipeline 1.exe` for Windows or `test pipeline 1.apk` for Android).
-
-> Note: The project currently uses a hard-coded `godot_editor_path` in `project_setup.py`. Please update that path to point to your local Godot executable.
 
 ---
 
@@ -67,22 +65,30 @@ Version data is managed by `core_game/scripts/custom_version_resource.gd`:
 
 ## Files and responsibilities 
 
-- `build_pipline/build_pipeline.py` — Python entry point. Builds the command to run the Godot editor in headless mode, supplies the export target and passes the JSON payload.
-- `build_pipline/project_setup.py` — Command-line argument parsing and project configuration (paths, output location, exported filename and platform). Update `godot_editor_path` and `your_project_path` here.
-- `core_game/scripts/build_pipline_bridge.gd` — Godot-side bridge script (runs as a SceneTree). It reads the JSON payload from the command line, updates `custom_version_resource` and `custom_resource`, saves them and triggers version saving.
+- `build_pipeline/build_pipeline.py` — Python entry point. Builds the command to run the Godot editor in headless mode, supplies the export target and passes the JSON payload.
+- `build_pipeline/project_setup.py` — Command-line argument parsing and project configuration (paths, output location, exported filename and platform). Update `godot_editor_path` and `your_project_path` here.
+- `core_game/scripts/build_pipeline_bridge.gd` — Godot-side bridge script (runs as a SceneTree). It reads the JSON payload from the command line, updates `custom_version_resource` and `custom_resource`, saves them and triggers version saving.
 - `core_game/scripts/custom_resource.gd` — Small `Resource` that stores `time_to_generate_icon` (used as the spawn example).
 - `core_game/scripts/custom_version_resource.gd` — Version management resource with init/increase/save logic.
 - `core_game/gui/gui_main_screen.gd` — Example UI that reads `custom_resource` and spawns icons according to `time_to_generate_icon`.
-
+- `build_pipeline/validate_export_templates.py` - Validates the presence of required  [**export_presets**](https://docs.godotengine.org/en/latest/tutorials/export/exporting_projects.html). If the pipeline cannot locate the selected export template, it will stop execution and raise a clear exception, including links to the relevant Godot documentation to help resolve the issue. 
 ---
 
 ## Configuration & setup 
-
 1. Update `project_setup.py` with your local paths:
-   - `godot_editor_path` → path to your Godot executable
-   - `your_project_path` → your project root
+   - `godot_editor_path` → provide fallback default path.
+   - `your_project_path` → this will auto detecte if you face any issue please provide default path.
 2. Ensure your Godot project has an export preset for the chosen platform (Windows/Android).
 3. Run the `build_pipeline.py` command with the required CLI args.
+
+### Environment Variables
+
+It is recommended to configure the Godot editor path using an environment variable. This helps reduce manual configuration mistakes and makes the pipeline easier to use across different machines.
+
+1. Locate the installed Godot editor executable on your system.
+2. Set the full path to this executable as an environment variable named GODOT_EDITOR_PATH.
+
+Once set, the pipeline will automatically use this value without requiring hard-coded paths in the configuration files.
 
 ---
 
@@ -98,6 +104,7 @@ See milestones for the long-term roadmap:
 - If Godot fails to run, check `godot_editor_path` is correct and reachable.
 - Ensure the export preset name matches your selected platform and that the export templates are installed (Android requires SDK/NDK setup).
 - Use the command-line `--` separator carefully — the script relies on Godot's `OS.get_cmdline_user_args()` to retrieve the JSON payload.
+- A dedicated Common Errors document will be added and linked here. This section is expected to grow over time, as common issues and their solutions are identified, and therefore deserves more detailed explanations than can reasonably fit into a short summary.
 
 ---
 
