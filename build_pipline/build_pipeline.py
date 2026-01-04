@@ -9,6 +9,26 @@ args=[{
 
 payload = json.dumps(args)
 
+try:
+    if payload is None or payload == "":
+        raise ValueError("Payload is not set.")
+    
+    _unloaded_payload = json.loads(payload)
+    
+    if not isinstance(_unloaded_payload, list):
+        raise ValueError("Payload must be a JSON array.")
+    
+    if len(_unloaded_payload) == 0:
+        raise ValueError("Payload array is empty.")
+    
+    if _unloaded_payload[0].get("spawn_rate") < 0:
+        raise ValueError("payload spawn_rate must be non-negative.")
+
+except Exception as e:
+    print(f"Error: {e}")
+    exit(1)
+
+
 command = [
     project_setup.godot_editor_path,
     "--headless",
