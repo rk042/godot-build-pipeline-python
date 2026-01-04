@@ -23,7 +23,7 @@ try:
     godot_editor_path = environ.get("GODOT_EDITOR_PATH", r"E:\Godot_v4.5.1-stable_win64\Godot_v4.5.1-stable_win64.exe") # if pipeline would be able to find godot editor path from env variable, otherwise set it manually here
     your_project_path = Path(__file__).resolve().parents[1] # r"D:\Projects\Godot\godot-build-pipeline-python"
     build_output_path = exported_project_path  # if you want to set custom build output path, otherwise leave it as None
-    script_path = "res://core_game/scripts/build_pipline_bridge.gd" # bridge script path in your project
+    script_path = "res://core_game/scripts/build_pipeline_bridge.gd" # bridge script path in your project
     
     if godot_editor_path is None or godot_editor_path == "":
         raise ValueError("Godot editor path is not set.")
@@ -82,8 +82,11 @@ try:
 
     if script_path is None or script_path == "":
         raise ValueError("Script path is not set.")
+    elif not Path(script_path).exists():
+        raise ValueError(f"Script path does not exist: {script_path}")
     else:
         print(f"Script path is set to: {script_path}")
+
 
     print("Project setup completed successfully.")
 
