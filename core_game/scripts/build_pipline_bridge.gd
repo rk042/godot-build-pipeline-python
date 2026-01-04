@@ -44,8 +44,13 @@ func _init():
 		version_resource_object.init()
 		print("manual version was not passed so using saved version and increase it")
 			
+	if config["spawn_rate"] < 0:
+		print("spawn_rate must be non-negative.")
+		quit(1)
+	
 	version_resource_object.increase_version()
 	var _resource1 = ResourceSaver.save(version_resource_object)
+	
 	custom_resource_object.init(config["spawn_rate"])
 	var _resource2 = ResourceSaver.save(custom_resource_object)
 		
