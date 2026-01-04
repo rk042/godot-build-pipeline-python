@@ -104,7 +104,7 @@ See milestones for the long-term roadmap:
 - If Godot fails to run, check `godot_editor_path` is correct and reachable.
 - Ensure the export preset name matches your selected platform and that the export templates are installed (Android requires SDK/NDK setup).
 - Use the command-line `--` separator carefully — the script relies on Godot's `OS.get_cmdline_user_args()` to retrieve the JSON payload.
-- A dedicated Common Errors document will be added and linked here. This section is expected to grow over time, as common issues and their solutions are identified, and therefore deserves more detailed explanations than can reasonably fit into a short summary.
+- Please check document named ``Common Errors & Mistakes.md``
 
 ---
 
