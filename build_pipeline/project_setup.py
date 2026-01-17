@@ -1,105 +1,164 @@
-from pathlib import Path
-from argparse import ArgumentParser
-from sys import platform
+from __future__ import annotations
+
+from argparse import ArgumentParser, Namespace
+from dataclasses import dataclass
 from os import environ
-from validate_export_templates import available_platforms
+from pathlib import Path
+from sys import platform
 
-parser = ArgumentParser(description="Godot build pipeline")
+import validate_export_templates
 
-parser.add_argument("--exported-project-name", required=True)
-parser.add_argument("--exported-project-path", required=False)
-parser.add_argument("--exported-platform", choices=["windows", "android"], required=True)
+SUPPORTED_PLATFORMS = {
+    "windows": ("Windows", ".exe"),
+    "android": ("Android", ".apk"),
+}
 
-args = parser.parse_args()
 
-exported_project_name = args.exported_project_name
-exported_platform = args.exported_platform
-exported_project_path = args.exported_project_path
+@dataclass(frozen=True)
+class ProjectSetup:
+    godot_editor_path: str
+    your_project_path: Path
+    build_output_path: Path
+    script_path: str
+    exported_project_name: str
+    exported_platform: str
 
-print(f"Exported Project Name: {exported_project_name}")
-print(f"Export Platform: {exported_platform}")
 
-try:
-    godot_editor_path = environ.get("GODOT_EDITOR_PATH", r"E:\Godot_v4.5.1-stable_win64\Godot_v4.5.1-stable_win64.exe") # if pipeline would be able to find godot editor path from env variable, otherwise set it manually here
-    your_project_path = Path(__file__).resolve().parents[1] # r"D:\Projects\Godot\godot-build-pipeline-python"
-    build_output_path = exported_project_path  # if you want to set custom build output path, otherwise leave it as None
-    script_path = "res://core_game/scripts/build_pipeline_bridge.gd" # bridge script path in your project
-    
-    if godot_editor_path is None or godot_editor_path == "":
-        raise ValueError("Godot editor path is not set.")
-    else:
+def build_parser() -> ArgumentParser:
+    parser = ArgumentParser(description="Godot build pipeline")
+    parser.add_argument("--exported-project-name", required=True)
+    parser.add_argument("--exported-project-path", required=False)
+    parser.add_argument(
+        "--exported-platform",
+        choices=sorted(SUPPORTED_PLATFORMS.keys()),
+        required=True,
+    )
+    parser.add_argument("--godot-editor-path", required=False)
+    parser.add_argument("--project-path", required=False)
+    parser.add_argument(
+        "--script-path",
+        required=False,
+        default="res://core_game/scripts/build_pipeline_bridge.gd",
+    )
+    return parser
+
+
+def _is_path_like(value: str) -> bool:
+    if "/" in value or "\\" in value:
+        return True
+    return Path(value).is_absolute()
+
+
+def _resolve_godot_editor_path(args: Namespace) -> str:
+    godot_editor_path = args.godot_editor_path or environ.get("GODOT_EDITOR_PATH")
+    if not godot_editor_path:
+        raise ValueError(
+            "Godot editor path is not set. Use --godot-editor-path or GODOT_EDITOR_PATH."
+        )
+
+    if _is_path_like(godot_editor_path):
         godot_path = Path(godot_editor_path)
-        host_plat = platform
+        if not godot_path.exists():
+            raise ValueError(f"Godot editor path does not exist: {godot_path}")
+        if not godot_path.is_file():
+            raise ValueError("Godot editor path must point to a file.")
+        if platform.startswith("win") and godot_path.suffix.lower() != ".exe":
+            raise ValueError("Godot editor path must point to a .exe file on Windows.")
 
-        if host_plat.startswith("win"):
-            if not godot_path.exists():
-                raise ValueError(f"Godot editor path does not exist: {godot_path}")
+    return godot_editor_path
 
-            if not godot_path.is_file():
-                raise ValueError("Godot editor path must point to a file.")
 
-            if godot_path.suffix.lower() != ".exe":
-                raise ValueError("Godot editor path must point to a .exe file on Windows.")
-            
-        #will add more support when I get my linux machine back
+def _resolve_project_path(project_path: str | None) -> Path:
+    resolved = Path(project_path) if project_path else Path(__file__).resolve().parents[1]
+    if not resolved.exists():
+        raise ValueError(f"Project path does not exist: {resolved}")
+    return resolved
 
-        print(f"Godot editor path is set to: {godot_editor_path}")
 
-    if your_project_path is None or your_project_path == "":
-        raise ValueError("Project path is not set.")
+def _resolve_build_output_path(
+    exported_project_path: str | None, project_path: Path
+) -> Path:
+    if exported_project_path:
+        build_output_path = Path(exported_project_path)
     else:
-        print(f"Project path is set to: {your_project_path}")    
+        build_output_path = project_path / "builds/test"
 
-    if build_output_path is None or build_output_path == "":
-        (Path(your_project_path) / "builds/test").mkdir(parents=True, exist_ok=True)
-        build_output_path = str(Path(your_project_path) / "builds/test")
-        print(f"Build output path is not set. Using default: {build_output_path}")
-    elif not Path(build_output_path).exists():
-        Path(build_output_path).mkdir(parents=True, exist_ok=True)
-        print(f"Build output path did not exist. Created directory at: {build_output_path}")
-    else:
-        print(f"Build output path is set to: {build_output_path}")
+    build_output_path.mkdir(parents=True, exist_ok=True)
+    return build_output_path
 
-    if exported_project_name is None or exported_project_name == "":
+
+def _normalize_export_config(exported_project_name: str, exported_platform: str) -> tuple[str, str]:
+    if not exported_project_name:
         raise ValueError("Exported project name is not set.")
-    else:
-        print(f"Exported project name is set to: {exported_project_name}")
 
-    if exported_platform is None or exported_platform == "":
-        raise ValueError("Export platform is not set.") 
-    else:
-        print(f"Export platform is set to: {exported_platform}")
+    platform_key = exported_platform.strip().lower()
+    if platform_key not in SUPPORTED_PLATFORMS:
+        raise ValueError(
+            f"Unsupported export platform: {exported_platform}, "
+            "please use 'windows' or 'android'."
+        )
 
-    match exported_platform.lower():
-        case "windows":
-            exported_platform = "Windows"
-            exported_project_name += ".exe"
-        case "android":
-            exported_platform = "Android"
-            exported_project_name += ".apk"
-        case _:
-           raise ValueError(f"Unsupported export platform: {exported_platform}, please use 'windows' or 'android'.")
+    platform_name, extension = SUPPORTED_PLATFORMS[platform_key]
+    return platform_name, f"{exported_project_name}{extension}"
 
-    if script_path is None or script_path == "":
+
+def _validate_script_path(script_path: str) -> None:
+    if not script_path:
         raise ValueError("Script path is not set.")
-    elif not Path(script_path).exists():
+    if script_path.startswith("res://"):
+        return
+    if not Path(script_path).exists():
         raise ValueError(f"Script path does not exist: {script_path}")
-    else:
-        print(f"Script path is set to: {script_path}")
 
 
-    print("Project setup completed successfully.")
+def prepare_setup(args: Namespace) -> ProjectSetup:
+    godot_editor_path = _resolve_godot_editor_path(args)
+    your_project_path = _resolve_project_path(args.project_path)
+    build_output_path = _resolve_build_output_path(args.exported_project_path, your_project_path)
+    exported_platform, exported_project_name = _normalize_export_config(
+        args.exported_project_name, args.exported_platform
+    )
+    _validate_script_path(args.script_path)
 
-    print("Checking available export platforms from export_presets.cfg...")
+    export_presets_path = validate_export_templates.find_export_presets_path(your_project_path)
+    available_platforms = validate_export_templates.load_available_platforms(export_presets_path)
 
     if exported_platform.lower() not in available_platforms:
-        raise ValueError(f"Export platform '{exported_platform.lower()}' is not available in export_presets.cfg. Available platforms: {available_platforms}\nFor more info visit : https://docs.godotengine.org/en/stable/tutorials/export/")
-    else:
-        print(f"Export platform '{exported_platform}' is available in export_presets.cfg.")
+        raise ValueError(
+            f"Export platform '{exported_platform.lower()}' is not available in export_presets.cfg. "
+            f"Available platforms: {available_platforms}\n"
+            "For more info visit : https://docs.godotengine.org/en/stable/tutorials/export/"
+        )
 
-    print("Validation of export templates completed successfully.")
+    return ProjectSetup(
+        godot_editor_path=godot_editor_path,
+        your_project_path=your_project_path,
+        build_output_path=build_output_path,
+        script_path=args.script_path,
+        exported_project_name=exported_project_name,
+        exported_platform=exported_platform,
+    )
 
-except Exception as e:
-    print(f"Error: {e}")
-    exit(1)
 
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    try:
+        setup = prepare_setup(args)
+        print(f"Exported Project Name: {setup.exported_project_name}")
+        print(f"Export Platform: {setup.exported_platform}")
+        print(f"Godot editor path is set to: {setup.godot_editor_path}")
+        print(f"Project path is set to: {setup.your_project_path}")
+        print(f"Build output path is set to: {setup.build_output_path}")
+        print(f"Script path is set to: {setup.script_path}")
+        print("Project setup completed successfully.")
+        print("Validation of export templates completed successfully.")
+        return 0
+    except Exception as exc:
+        print(f"Error: {exc}")
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
